@@ -28,7 +28,7 @@ This approach enables accurate prediction of adsorption isotherm and framework d
 
 ## Scientific Motivation
 
-Traditional GCMC simulations assume rigid frameworks, while purely MD-based approaches struggle with rare insertion/deletion events. pySIMAID bridges this gap by:
+Traditional GCMC simulations assume rigid frameworks, while purely MD-based approaches trquire unfeasibly large supercells. pySIMAID bridges this gap by:
 
 1. Using GCMC to efficiently sample adsorption/desorption
 2. Allowing the framework to relax and deform via MD
