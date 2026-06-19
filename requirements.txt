@@ -1,0 +1,8 @@
+# pySIMAID has no Python package dependencies beyond the standard library
+# 
+# External software requirements:
+# - Python 3.7+
+# - LAMMPS (2020 or later) with MC, KSPACE, and MOLECULE packages
+# - MPI implementation (OpenMPI, MPICH, or Intel MPI)
+#
+# To install LAMMPS, visit: https://docs.lammps.org/Install.html

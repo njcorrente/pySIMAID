@@ -1,0 +1,107 @@
+# NPT MD Step
+# Reads from npt_initial.data and outputs npt_final.data
+#
+
+units real
+atom_style full
+boundary p p p
+
+# Calculate system volume
+variable volume equal lx*ly*lz
+
+pair_style lj/cut/coul/long 14.0
+pair_modify mix arithmetic tail no
+bond_style harmonic
+angle_style harmonic
+dihedral_style charmm
+improper_style cvff
+
+read_data ${rundir}/npt_initial.data
+
+kspace_style pppm 1e-5
+
+include paircoeffs.in
+
+special_bonds lj/coul 0.0 0.0 0.5
+
+group Zn1 type 1
+group N1 type 2
+group C type 3 4 5
+group H type 6 7 8 9
+group Ar type 10
+group MOF type 1 2 3 4 5 6 7 8 9
+
+mass 10 39.948
+
+fix recenter MOF recenter INIT INIT INIT
+
+# Run 0 steps to compute initial energies
+run 0
+
+# Write initial state to separate files (one value per file)
+print "$(pe)" file ${rundir}/npt_u_init.txt
+print "$(vol)" file ${rundir}/npt_v_init.txt
+
+# Read reference values
+variable u_ref_read file ${rundir}/reference_u.txt
+variable v_ref_read file ${rundir}/reference_v.txt
+variable n_ref_read file ${rundir}/reference_n.txt
+
+# Store as internal variables that won't change
+variable u_ref internal ${u_ref_read}
+variable v_ref internal ${v_ref_read}
+variable n_ref internal ${n_ref_read}
+
+
+variable p_target equal ${p}
+
+# Conversion factor: atm*A^3 to kcal/mol
+variable atm_to_kcal equal 1.4584e-5
+
+# Temperature and beta for entropy term
+variable beta equal 1.0/(${kb}*${Tsim})
+
+# Initialize dynamics
+velocity all create ${Tsim} ${iter} dist gaussian loop geom
+
+timestep 1
+fix npt all npt temp ${Tsim} ${Tsim} $(100.0*dt) iso ${p} ${p} $(1000.0*dt)
+
+# Calculate DG during trajectory with all three terms:
+# DG = DU + P*DV - N*ln(V/V_ref)/beta
+variable du equal pe-v_u_ref
+variable dv equal vol-v_v_ref
+variable n_ar equal count(Ar)
+
+# Entropy term: -N*ln(V/V_ref)/beta
+# variable entropy_term equal -v_n_ar*ln(v_volume/v_v_ref)/v_beta
+variable entropy_term equal 0
+
+# Total DG
+variable delta_g equal v_du+v_p_target*v_dv*v_atm_to_kcal+v_entropy_term
+
+# Thermo output
+thermo_style custom step atoms lx ly lz v_volume temp pxx pyy pzz press pe ke etotal enthalpy v_delta_g
+thermo 100
+
+run ${npt_steps}
+
+# Extract final state
+variable u_final equal pe
+variable v_final equal vol
+variable p_final equal press
+variable n_final equal count(Ar)
+
+# Calculate final DG with all three terms
+variable du_final equal v_u_final-v_u_ref
+variable dv_final equal v_v_final-v_v_ref
+variable entropy_final equal -v_n_final*ln(v_v_final/v_v_ref)/v_beta
+variable delta_g_final equal v_du_final+v_p_target*v_dv_final*v_atm_to_kcal+v_entropy_final
+
+print "${u_final} ${v_final} ${p_final} ${delta_g_final}" file ${rundir}/npt_final_state.txt
+print "${delta_g_final}" file ${rundir}/npt_delta_g.txt
+
+write_data ${rundir}/npt_final.data
+
+unfix npt
+unfix recenter

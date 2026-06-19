@@ -1,0 +1,18 @@
+# Pair coefficients for ZIF-8 + Ar system
+# LJ parameters: epsilon (kcal/mol), sigma (Angstroms)
+
+# MOF atoms
+pair_coeff 1 1 0.0670 2.462      # Zn1-Zn1
+pair_coeff 2 2 0.0373 3.261      # N1-N1
+pair_coeff 3 3 0.0567 3.431      # C1-C1
+pair_coeff 4 4 0.0567 3.431      # C2-C2
+pair_coeff 5 5 0.0567 3.431      # C3-C3
+pair_coeff 6 6 0.0238 2.571      # H2-H2
+pair_coeff 7 7 0.0238 2.571      # H3A-H3A
+pair_coeff 8 8 0.0238 2.571      # H3B-H3B
+pair_coeff 9 9 0.0238 2.571      # H3C-H3C
+
+# Argon
+pair_coeff 10 10 0.238066 3.4    # Ar-Ar
+
+# Note: Cross interactions handled by arithmetic mixing rule

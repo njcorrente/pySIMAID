@@ -1,0 +1,41 @@
+# Prepare initial structure and equilibrate empty framework
+units real
+atom_style full
+boundary p p p
+
+pair_style lj/cut/coul/long 14.0
+pair_modify mix arithmetic tail no
+bond_style harmonic
+angle_style harmonic
+dihedral_style charmm
+improper_style cvff
+
+read_data data_zhang2013_SC extra/atom/types 1
+
+kspace_style pppm 1e-5
+include paircoeffs.in
+special_bonds lj/coul 0.0 0.0 0.5
+mass 10 39.948
+
+group MOF type 1 2 3 4 5 6 7 8 9
+fix recenter MOF recenter INIT INIT INIT
+
+# Equilibrate empty framework at target T and P
+velocity MOF create ${Tsim} 12345 dist gaussian
+timestep 1.0
+fix npt_empty MOF npt temp ${Tsim} ${Tsim} 100.0 iso ${p} ${p} 100.0
+
+thermo_style custom step temp press vol pe ke etotal
+thermo 1000
+
+run ${equil_steps}
+
+# Save empty framework properties
+variable v0_empty equal vol
+variable u0_empty equal pe
+print "${v0_empty} ${u0_empty}" file empty_framework_properties.txt
+
+write_data empty_equilibrated.data
+
+unfix npt_empty
+unfix recenter

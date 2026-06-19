@@ -1,0 +1,52 @@
+# NVT Relaxation Step
+# Reads gcmc_final.data, relaxes on the FULL force field (lj/cut/coul/long),
+# and writes nvt_final.data. 
+#
+
+units real
+atom_style full
+boundary p p p
+
+pair_style lj/cut/coul/long 14.0
+pair_modify mix arithmetic tail no
+bond_style harmonic
+angle_style harmonic
+dihedral_style charmm
+improper_style cvff
+
+read_data ${rundir}/gcmc_final.data
+
+kspace_style pppm 1e-5
+include paircoeffs.in
+special_bonds lj/coul 0.0 0.0 0.5
+
+group Zn1 type 1
+group N1 type 2
+group C type 3 4 5
+group H type 6 7 8 9
+group Ar type 10
+group MOF type 1 2 3 4 5 6 7 8 9
+
+mass 10 39.948
+
+fix recenter MOF recenter INIT INIT INIT
+
+
+velocity all create ${Tsim} ${iter} dist gaussian loop geom
+timestep 1
+fix nvt_relax all nvt temp ${Tsim} ${Tsim} $(100.0*dt)
+
+thermo_style custom step atoms temp vol pe ke etotal
+thermo 100
+
+run ${nvt_steps}
+
+unfix nvt_relax
+
+print "$(pe)" file ${rundir}/reference_u.txt
+print "$(vol)" file ${rundir}/reference_v.txt
+print "$(count(Ar))" file ${rundir}/reference_n.txt
+
+write_data ${rundir}/nvt_final.data
+
+unfix recenter
