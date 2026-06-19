@@ -15,7 +15,7 @@ A Python-controlled workflow for simulating gas adsorption and structural deform
 - **NPT MD** for realistic structural dynamics with volume fluctuations
 - **Metropolis acceptance** based on rigorous free energy comparisons
 
-This approach enables accurate prediction of adsorption isotherms, framework deformation, and breathing transitions in flexible MOFs.
+This approach enables accurate prediction of adsorption isotherm and framework deformation in flexible MOFs.
 
 ## Key Features
 
