@@ -205,7 +205,7 @@ Where:
 - **S** = configurational entropy
 
 ### Metropolis Acceptance Criterion
-
+```
 P_accept = min[1, exp(-beta DG)]
 
 where beta = 1/(k_B T)
