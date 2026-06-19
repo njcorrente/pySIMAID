@@ -25,7 +25,6 @@ This approach enables accurate prediction of adsorption isotherms, framework def
 -  **Detailed statistics** tracking and logging
 -  **Modular LAMMPS inputs** for easy force field customization
 -  **MPI-parallel** execution support
--  **Zero Python dependencies** beyond standard library
 
 ## Scientific Motivation
 
