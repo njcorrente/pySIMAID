@@ -230,4 +230,3 @@ If you use pySIMAID in your research, please cite:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```
