@@ -105,7 +105,7 @@ pySIMAID/
 │   └── *.data                   # Initial MOF structure
 ├── README.md
 ├── LICENSE
-└── requirements.txt              # (empty - no dependencies)
+└── requirements.txt             
 ```
 
 ## Usage
