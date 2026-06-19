@@ -11,7 +11,7 @@ A Python-controlled workflow for simulating gas adsorption and structural deform
 **pySIMAID** (Python Simulator for Adsorption-Induced Deformation) is designed to capture the coupled phenomena of gas adsorption and framework flexibility in nanoporous materials. The method combines:
 
 - **GCMC** for efficient sampling of particle insertions/deletions at fixed chemical potential
-- **NVT relaxation** to eliminate hard overlaps on the full force field
+- **NVT relaxation** for adsorbate relaxation and velocity assignment
 - **NPT MD** for realistic structural dynamics with volume fluctuations
 - **Metropolis acceptance** based on rigorous free energy comparisons
 
