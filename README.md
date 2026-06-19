@@ -51,14 +51,6 @@ This captures adsorption-induced deformation phenomena such as:
   - MPI support
 - **MPI** implementation (OpenMPI, MPICH, or Intel MPI)
 
-### LAMMPS Compilation
-
-```bash
-cd lammps/src
-make yes-mc yes-kspace yes-molecule yes-rigid
-make mpi -j 8
-```
-
 ## Installation
 
 ```bash
