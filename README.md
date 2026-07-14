@@ -218,6 +218,11 @@ If you use pySIMAID in your research, please cite:
 }
 ```
 
+## Todo list
+- Make the atom types user input
+- Mixtures
+- Interface with open-source MC codes
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
