@@ -219,8 +219,7 @@ If you use pySIMAID in your research, please cite:
 ```
 
 ## Todo list
-- Make the atom types user input
-- Mixtures
+- Examples for mixtures
 - Interface with open-source MC codes
 
 ## License
