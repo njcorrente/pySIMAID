@@ -138,19 +138,16 @@ class HybridSimulation:
             }
     
     def metropolis_accept(self, delta_g):
-            """Apply Metropolis criterion, or accept unconditionally if disabled."""
-            rand = random.random()
-    
-            if self.disable_metropolis:
-                acc_prob = 1.0
-            elif delta_g <= 0:
-                acc_prob = 1.0
-            else:
-                acc_prob = math.exp(-self.beta * delta_g)
-    
-            accept = rand < acc_prob
-    
-            return accept, acc_prob, rand
+        """Apply the Metropolis criterion or accept unconditionally."""
+        rand = random.random()
+
+        if self.disable_metropolis or delta_g <= 0:
+            acc_prob = 1.0
+        else:
+            acc_prob = math.exp(-self.beta * delta_g)
+
+        accept = rand < acc_prob
+        return accept, acc_prob, rand
     
     def run_gcmc_step(self, iteration):
         """Execute GCMC equilibration step."""
@@ -275,6 +272,34 @@ class HybridSimulation:
         
         return status
     
+    def load_statistics(self):
+        """Load acceptance counts and determine the next iteration."""
+        if not self.stats_file.exists():
+            return 0
+
+        last_iteration = 0
+
+        with open(self.stats_file) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+
+                parts = line.split()
+                if len(parts) < 2:
+                    continue
+
+                iteration = int(parts[0])
+                accepted = bool(int(parts[1]))
+
+                last_iteration = max(last_iteration, iteration)
+                if accepted:
+                    self.n_accepted += 1
+                else:
+                    self.n_rejected += 1
+
+        return last_iteration
+    
     def write_periodic_output(self, iteration):
         """Save configuration snapshot."""
         print(f"[OUTPUT] Writing configuration snapshot...")
@@ -305,17 +330,21 @@ class HybridSimulation:
         
         # Check if continuing from previous run
         is_restart = self.check_restart()
-        
+
         if not is_restart:
-            # Fresh start: prepare and equilibrate empty framework
             self.equilibrate_empty_framework()
-            
-            # Initialize statistics file
+
             with open(self.stats_file, "w") as f:
                 f.write("# Iter Accept G_GCMC G_NPT AccProb RandNum\n")
+
+            start_iteration = 1
+        else:
+            last_iteration = self.load_statistics()
+            start_iteration = last_iteration + 1
+            print(f"Resuming at iteration {start_iteration}")
         
         # Main iteration loop
-        for iteration in range(1, self.n_iterations + 1):
+        for iteration in range(start_iteration, self.n_iterations + 1):
             print(f"\n{'=' * 20} Iteration {iteration}/{self.n_iterations} {'=' * 20}")
             
             # Step 1: GCMC equilibration
