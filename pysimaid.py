@@ -31,6 +31,7 @@ class HybridSimulation:
         self.phi = args.phi
         self.n_iterations = args.n_iterations
         self.write_interval = args.write_interval
+        self.disable_metropolis = args.disable_metropolis
         
         # Simulation step counts
         self.equil_steps = args.equil_steps
@@ -137,17 +138,19 @@ class HybridSimulation:
             }
     
     def metropolis_accept(self, delta_g):
-        """Apply Metropolis criterion for move acceptance."""
-        rand = random.random()
-        
-        if delta_g <= 0:
-            acc_prob = 1.0
-        else:
-            acc_prob = math.exp(-self.beta * delta_g)
-        
-        accept = rand < acc_prob
-        
-        return accept, acc_prob, rand
+            """Apply Metropolis criterion, or accept unconditionally if disabled."""
+            rand = random.random()
+    
+            if self.disable_metropolis:
+                acc_prob = 1.0
+            elif delta_g <= 0:
+                acc_prob = 1.0
+            else:
+                acc_prob = math.exp(-self.beta * delta_g)
+    
+            accept = rand < acc_prob
+    
+            return accept, acc_prob, rand
     
     def run_gcmc_step(self, iteration):
         """Execute GCMC equilibration step."""
@@ -233,7 +236,10 @@ class HybridSimulation:
     
     def apply_acceptance(self, iteration, g_gcmc, g_npt):
         """Apply Metropolis acceptance criterion and update configuration."""
-        print(f"[METROPOLIS] Applying acceptance criterion...")
+        if self.disable_metropolis:
+            print("[METROPOLIS] Criterion disabled; NPT configuration will be accepted")
+        else:
+            print("[METROPOLIS] Applying acceptance criterion...")
         print(f"[METROPOLIS] Comparing NPT final vs NVT output (reference state)")
         
         accept, acc_prob, rand_num = self.metropolis_accept(g_npt)
@@ -368,6 +374,13 @@ def main():
                        help="Number of hybrid iterations")
     parser.add_argument("--write-interval", type=int, default=100,
                        help="Snapshot save interval")
+    parser.add_argument(
+        "--no-metropolis",
+        "--disable-metropolis",
+        dest="disable_metropolis",
+        action="store_true",
+        help="Disable the Metropolis criterion and accept every NPT configuration"
+    )
     
     # Step counts
     parser.add_argument("--equil-steps", type=int, default=100000,
