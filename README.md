@@ -51,6 +51,7 @@ This workflow can capture adsorption-induced deformation phenomena such as:
 ### Software Dependencies
 
 - **Python 3.7+**
+  - `numpy` package for results extraction
 - **LAMMPS** (2020 or later) compiled with:
   - `MC` package for GCMC
   - `KSPACE` package for long-range electrostatics
