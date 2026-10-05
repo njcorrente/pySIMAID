@@ -64,7 +64,7 @@ class HybridSimulation:
             "nvt_step.in",
             "npt_step.in",
             "paircoeffs.in",
-            "data_zhang2013_SC"
+            "ZIF-8.data"
         ]
         
         missing = [f for f in required_files if not Path(f).exists()]

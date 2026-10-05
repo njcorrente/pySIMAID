@@ -10,7 +10,7 @@ angle_style harmonic
 dihedral_style charmm
 improper_style cvff
 
-read_data data_zhang2013_SC extra/atom/types 1
+read_data ZIF-8.data extra/atom/types 1
 
 kspace_style pppm 1e-5
 include paircoeffs.in
