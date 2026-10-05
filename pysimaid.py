@@ -176,6 +176,10 @@ class HybridSimulation:
         state = self.extract_final_state(self.run_dir / "gcmc_final_state.txt")
         print(f"[GCMC] Final: U={state['u']:.2f} V={state['v']:.2f} G={state['g']:.2f}")
         
+        # Preserve the final GCMC configuration in case the NPT move is rejected
+        shutil.copy(self.run_dir / "gcmc_final.data",
+                    self.run_dir / "gcmc_reference.data")
+        
         return state
     
     def run_nvt_step(self, iteration):
@@ -240,7 +244,7 @@ class HybridSimulation:
             print("[METROPOLIS] Criterion disabled; NPT configuration will be accepted")
         else:
             print("[METROPOLIS] Applying acceptance criterion...")
-        print(f"[METROPOLIS] Comparing NPT final vs NVT output (reference state)")
+        print("[METROPOLIS] Testing NPT final configuration for acceptance")
         
         accept, acc_prob, rand_num = self.metropolis_accept(g_npt)
         
@@ -250,16 +254,17 @@ class HybridSimulation:
         print(f"[METROPOLIS] Random number = {rand_num:.4f}")
         
         if accept:
-            print("[METROPOLIS] ✓ ACCEPTED - Updating to NPT final configuration")
+            print("[METROPOLIS] ACCEPTED - Updating to NPT final configuration")
             shutil.copy(self.run_dir / "npt_final.data",
                        self.run_dir / "current_config.data")
             self.n_accepted += 1
             status = "ACCEPTED"
         else:
-            print("[METROPOLIS] ✗ REJECTED - Keeping NVT-relaxed output (state B)")
-            # GCMC + NVT moves are kept; only NPT trajectory is rejected
-            shutil.copy(self.run_dir / "nvt_final.data",
-                       self.run_dir / "current_config.data")
+            print("[METROPOLIS] REJECTED - Reverting to final GCMC configuration")
+            # Reject the NVT/NPT structural evolution and retain the
+            # final GCMC configuration from this iteration.
+            shutil.copy(self.run_dir / "gcmc_reference.data",
+                        self.run_dir / "current_config.data")
             self.n_rejected += 1
             status = "REJECTED"
         
