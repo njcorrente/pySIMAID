@@ -62,7 +62,7 @@ variable atm_to_kcal equal 1.4584e-5
 variable beta equal 1.0/(${kb}*${Tsim})
 
 # Initialize dynamics
-velocity all create ${Tsim} ${iter} dist gaussian loop geom
+# velocity all create ${Tsim} ${iter} dist gaussian loop geom
 
 timestep 1
 fix npt all npt temp ${Tsim} ${Tsim} $(100.0*dt) iso ${p} ${p} $(1000.0*dt)

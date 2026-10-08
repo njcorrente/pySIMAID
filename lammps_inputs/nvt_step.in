@@ -32,7 +32,7 @@ mass 10 39.948
 fix recenter MOF recenter INIT INIT INIT
 
 
-velocity all create ${Tsim} ${iter} dist gaussian loop geom
+velocity Ar create ${Tsim} ${iter} dist gaussian loop geom
 timestep 1
 fix nvt_relax all nvt temp ${Tsim} ${Tsim} $(100.0*dt)
 
