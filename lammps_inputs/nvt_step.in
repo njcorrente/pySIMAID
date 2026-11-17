@@ -26,13 +26,14 @@ group C type 3 4 5
 group H type 6 7 8 9
 group Ar type 10
 group MOF type 1 2 3 4 5 6 7 8 9
+group adsorbate type 10
 
 mass 10 39.948
 
 fix recenter MOF recenter INIT INIT INIT
 
-
-velocity Ar create ${Tsim} ${iter} dist gaussian loop geom
+variable nAdsorbate equal count(adsorbate)
+if "${nAdsorbate} > 0" then "velocity adsorbate create ${Tsim} ${iter} dist gaussian loop geom"
 timestep 1
 fix nvt_relax all nvt temp ${Tsim} ${Tsim} $(100.0*dt)
 
