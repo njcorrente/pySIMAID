@@ -186,7 +186,7 @@ python tools/extract_hybrid_results.py ...
                          Default: lmp_mpi
 
 --nprocs N               Number of MPI processes
-                         Default: 16
+                         Default: 1
 ```
 
 ### Thermodynamic Conditions
